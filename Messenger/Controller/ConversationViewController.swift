@@ -6,14 +6,37 @@
 //
 
 import UIKit
+import FirebaseAuth
 
 class ConversationViewController: UIViewController {
+    
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        
+        view.backgroundColor = .red
+        
+        //send data to firebase real-time database
+        
+        
+        
+        
     }
 
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        validateAuth()
+    }
+    
+    private func validateAuth() {
+        
+        if FirebaseAuth.Auth.auth().currentUser == nil {
+            performSegue(withIdentifier: "ConverToLogin" , sender: self)
+        }
+    }
 
 }
 
