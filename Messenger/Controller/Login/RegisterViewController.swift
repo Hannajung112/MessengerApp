@@ -17,6 +17,11 @@ class RegisterViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         
+        self.navigationController?.setNavigationBarHidden(false, animated: false)
+
+        
+        tabBarController?.tabBar.isHidden = true
+        
         registerButton.layer.cornerRadius = 10
         
        fieldDesign(fieldName: emailField)
@@ -25,6 +30,12 @@ class RegisterViewController: UIViewController {
         //implement profile image
         imageView.layer.masksToBounds = true
         
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        self.navigationController?.setNavigationBarHidden(true, animated: false)
+
+        tabBarController?.tabBar.isHidden = false
     }
 
     override func viewDidLoad() {
@@ -74,14 +85,16 @@ class RegisterViewController: UIViewController {
               !username.isEmpty,
               !email.isEmpty,
               !password.isEmpty,
-              password.count >= 6 else {
+              password.count >= 6,
+              username.count >= 6
+            else {
             return alertUserRegisterError()
         }
         
- //firebase Login
+ //firebase Registeration
         
-        DatabaseManager.shared.UserEmailAlreadyRegistered(with: email) { (exists) -> (Void) in
-            if exists {
+        DatabaseManager.shared.UserEmailAlreadyRegistered(with: email) { (notexists) -> (Void) in
+            if !notexists {
                 self.alertUserRegisterError(alertMessage: "This email is already used!")
             }
             
@@ -91,15 +104,16 @@ class RegisterViewController: UIViewController {
                 } else {
                     
             //Grab user register data to -> DatabaseManager.swift_file
+                    
                     DatabaseManager.shared.insertUser(with: ChatAppUser(username: username, emailAddress: email))
                     
-                    
+                    self.alertUserRegisterError(alertTitle: "You have created new account!!", alertMessage: "You can now go back to login")
             
                     self.emailField.text = ""
                     self.passwordField.text = ""
                     self.usernameField.text = ""
                     
-                    self.navigationController?.dismiss(animated: true, completion: nil)
+                    
 
                 }
             }
@@ -110,8 +124,8 @@ class RegisterViewController: UIViewController {
     
     
     
-    func alertUserRegisterError( alertMessage: String = "Please enter all information to create a new account.")  {
-        let alert = UIAlertController(title: "Woops", message: alertMessage , preferredStyle: .alert)
+    func alertUserRegisterError( alertTitle: String = "Woops",alertMessage: String = "Please enter all information to create a new account.")  {
+        let alert = UIAlertController(title: alertTitle, message: alertMessage , preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Dismiss", style: .cancel, handler: nil))
         present(alert, animated: true)
     }

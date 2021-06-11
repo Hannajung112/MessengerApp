@@ -28,7 +28,14 @@ extension DatabaseManager {
     
     public func UserEmailAlreadyRegistered(with email:String, completion: @escaping ((Bool) -> (Void))) {
         
-        database.child(email).observeSingleEvent(of: .value) { (snapshot) in
+        //child method can't put '.' and '@', so we have to change into '-' instaed.
+        var safeEmail: String {
+            var safeEmail = email.replacingOccurrences(of: ".", with: "-")
+            safeEmail = safeEmail.replacingOccurrences(of: "@", with: "-")
+            return safeEmail
+        }
+        
+        database.child(safeEmail).observeSingleEvent(of: .value) { (snapshot) in
             if let foundEmail = snapshot.value as? String {
                 print("User already register with this email : \(foundEmail)")
                 
@@ -43,7 +50,7 @@ extension DatabaseManager {
     
     /// Inserts new user to database
     public func insertUser(with user: ChatAppUser) {
-        database.child(user.emailAddress).setValue([
+        database.child(user.safeEmail).setValue([
             "username": user.username
         ])
     }
@@ -60,4 +67,12 @@ struct ChatAppUser {
     let username : String
     let emailAddress: String
     //let profilePictureUrl : String
+    
+    //child method can't put '.' and '@', so we have to change into '-' instaed.
+    var safeEmail: String {
+        var safeEmail = emailAddress.replacingOccurrences(of: ".", with: "-")
+        safeEmail = safeEmail.replacingOccurrences(of: "@", with: "-")
+        return safeEmail
+    }
+
 }

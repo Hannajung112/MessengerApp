@@ -7,19 +7,23 @@
 
 import UIKit
 import FirebaseAuth
+import FBSDKLoginKit
+import FirebaseDatabase
 
 class ConversationViewController: UIViewController {
     
     
+    override func viewWillAppear(_ animated: Bool) {
+        
+        navigationItem.hidesBackButton = true
+        
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .red
         
         //send data to firebase real-time database
-        
-        
         
         
     }
@@ -27,16 +31,21 @@ class ConversationViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
+
         validateAuth()
     }
     
     private func validateAuth() {
-        
-        if FirebaseAuth.Auth.auth().currentUser == nil {
+
+        if FirebaseAuth.Auth.auth().currentUser == nil && FBSDKLoginKit.AccessToken.current == nil {
             performSegue(withIdentifier: "ConverToLogin" , sender: self)
         }
     }
+    
+    
+
+    
+    
 
 }
 
